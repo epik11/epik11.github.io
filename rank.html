@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ranking - Caça-Frases</title>
+<style>
+:root{
+  --bg:#0b1020;
+  --card:#141a2e;
+  --text:#e7ecf5;
+  --accent:#7c5cff;
+  --highlight:#1f8e73;
+  --radius:12px;
+  --shadow:0 6px 16px rgba(0,0,0,.35);
+}
+body{background:var(--bg);display:flex;flex-direction:column;align-items:center;padding:20px;color:var(--text);font-family:system-ui,sans-serif;}
+h1{margin-bottom:20px;font-size:24px;}
+table{border-collapse:collapse;width:90%;max-width:600px;background:var(--card);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow);}
+th,td{padding:12px;text-align:left;border-bottom:1px solid #273162;}
+th{background:#1b2446;}
+tr:last-child td{border-bottom:none;}
+tr.highlight{background:var(--highlight);}
+</style>
+</head>
+<body>
+<h1>Ranking dos Jogadores</h1>
+<table>
+<thead>
+<tr><th>Posição</th><th>Nick</th><th>Pontos</th></tr>
+</thead>
+<tbody id="rankingBody"></tbody>
+</table>
+
+<script src="https://cdn.socket.io/4.7.5/socket.io.min.js"></script>
+<script>
+const socket = io("https://4c7aed8a-28e3-4d4e-a08f-e7958a5f0251-00-1lb914l8emwtz.worf.replit.dev");
+const tbody = document.getElementById("rankingBody");
+
+function updateTable(players){
+  const sorted = Object.entries(players).sort((a,b)=>b[1].points-a[1].points);
+  tbody.innerHTML = "";
+  sorted.forEach(([nick,data],index)=>{
+    const tr = document.createElement("tr");
+    tr.className = (index===0)?"highlight":"";
+    tr.innerHTML = `<td>${index+1}</td><td>${nick}</td><td>${data.points}</td>`;
+    tbody.appendChild(tr);
+  });
+}
+
+socket.on("updateRanking", updateTable);
+</script>
+</body>
+</html>
